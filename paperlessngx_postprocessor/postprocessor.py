@@ -277,11 +277,10 @@ class DocumentRuleProcessor:
                                 merged_metadata = {**writable_metadata, **read_only_metadata}
                                 data_type = custom_field_object_definition.get('data_type')
                                 try:
-                                    match data_type:
-                                        case 'float':
-                                            newValue = float(newValue)
-                                        case 'integer':
-                                            newValue = int(newValue)
+                                    if data_type == 'float':
+                                        newValue = float(newValue)
+                                    elif data_type == 'integer':
+                                        newValue = int(newValue)
                                     new_dict = { 'field': custom_field_object_definition.get('id') , 'value': newValue }
                                     writable_metadata["custom_fields"].append(new_dict)
                                     newValue = ""
