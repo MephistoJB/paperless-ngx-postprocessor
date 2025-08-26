@@ -16,7 +16,8 @@ class AI:
             Analyze the document content which you will get in the next message.\
             After that I will send you the instruction which information you need to extract.\
             Be Short and concise and answer without any other additional information and without control characters. \
-            Correct spelling or other errors in your answer. Return the info in JSON format. '
+            Correct spelling or other errors in your answer. Return the info in JSON format. \
+            This is an example of the JSON format: {"info": "your answer"} '
     def getResponse(self, content, prompt):
         messages = [
         {
@@ -33,7 +34,7 @@ class AI:
         },
         ]
 
-        response = chat(self._model, messages=messages, format=info.model_json_schema())
+        response = chat(self._model, messages=messages)
         jsonvalue = json.loads(response['message']['content'])
         return (jsonvalue['info'])
     
@@ -75,7 +76,7 @@ class AI:
         response: ChatResponse = chat(model=self._model, messages=[
         {
             'role': 'user',
-            'content': 'Say Hello Gemma',
+            'content': 'Say Hello <your name>',
         },
         ])
 
