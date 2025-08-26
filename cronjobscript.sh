@@ -7,7 +7,7 @@ then
 #echo "eq 0 - paperlessngx_postprocessor not running"
 printenv
 #$DIR/venv/bin/python3 $DIR/paperlessngx_postprocessor.py --verbose DEBUG process --tag Refresh
-$DIR/venv/bin/python3 $DIR/paperlessngx_postprocessor.py --verbose --tag Refresh
+$DIR/venv/bin/python3 $DIR/paperlessngx_postprocessor.py --verbose --tag "${PNGX_POSTPROCESSOR_POSTPROCESSING_INPUT_TAG:-Refresh}"
 else
 echo "eq 0 - paperlessngx_postprocessor running - do nothing"
 fi
