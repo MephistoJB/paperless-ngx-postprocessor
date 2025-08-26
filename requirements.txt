@@ -5,3 +5,4 @@ PyYAML
 regex
 requests
 ollama
+debugpy

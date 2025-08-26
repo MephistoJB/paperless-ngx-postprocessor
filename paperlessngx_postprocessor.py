@@ -6,6 +6,17 @@ import sys
 import yaml
 import os
 
+# Debugpy import and setup for remote debugging
+if os.environ.get('PNGX_POSTPROCESSOR_DEBUG', '').lower() == 'true':
+    try:
+        import debugpy
+        debugpy.listen(("0.0.0.0", 5678))
+        print("⏳ Waiting for debugger to attach...")
+        debugpy.wait_for_client()
+        print("🔗 Debugger attached!")
+    except ModuleNotFoundError:
+        print("debugpy not installed; continuing without debugger")
+        
 from paperlessngx_postprocessor import Config, PaperlessAPI, Postprocessor
 from paperlessngx_postprocessor.ai import AI
 
