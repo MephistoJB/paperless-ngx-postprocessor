@@ -5,6 +5,7 @@ import logging
 import sys
 import yaml
 import os
+import copy
 
 # Debugpy import and setup for remote debugging
 if os.environ.get('PNGX_POSTPROCESSOR_DEBUG', '').lower() == 'true':
@@ -57,7 +58,12 @@ if __name__ == "__main__":
 
     logger = logging.getLogger("paperlessngx_postprocessor")
     logger.setLevel(config["verbose"])
-    logger.debug(f"Running {sys.argv[0]} with config {config} and {selector_config}")
+    # If we're in debug mode, sanitize the config to not print auth tokens
+    if logger.level <= logging.DEBUG:
+        sanitized_config = copy.deepcopy(config)
+        if sanitized_config['auth_token'] is not None:
+            sanitized_config['auth_token'] = "XXXXXXXX"
+        logger.debug(f"Running {sys.argv[0]} with config {sanitized_config} and {selector_config}")
 
     #Check wether AI should be used an if it is configured correctly
     #As of now only OLLAMA is supported. This means anything else then OLLAMA is ignored.
@@ -154,6 +160,8 @@ if __name__ == "__main__":
         #     #     logger.info(f"Postprocessing {len(documents)} documents with {config['selector']} \'{config['item_id_or_name']}\'")
 
         backup_documents = postprocessor.postprocess(documents)
+
+        logger.info(f"Changed {len(backup_documents)} out of {len(documents)} documents")
 
         if len(backup_documents) > 0 and config["backup"] is not None:
             logger.debug(f"Writing backup to {config['backup']}")
