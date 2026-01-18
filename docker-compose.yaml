@@ -1,0 +1,101 @@
+services:
+  db:
+    image: docker.io/library/postgres:17
+    restart: unless-stopped
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: paperless
+      POSTGRES_USER: paperless
+      POSTGRES_PASSWORD: paperless
+  redis:
+    image: docker.io/library/redis:8
+    restart: always
+    volumes:
+      - redisdata:/data
+  paperless-ngx:
+    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    restart: always
+    depends_on:
+      - db
+      - redis
+      - gotenberg
+      - tika
+    ports:
+      - "8002:8000"
+      - "127.0.0.1:8001:8001"
+      - "5678:5678"
+    volumes:
+      - data:/usr/src/paperless/data
+      - media:/usr/src/paperless/media
+      - ./:/usr/src/paperless-ngx-postprocessor
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      PAPERLESS_POST_CONSUME_SCRIPT: /usr/src/paperless-ngx-postprocessor/post_consume_script.sh
+      PNGX_POSTPROCESSOR_AI_USAGE: OLLAMA
+      PNGX_POSTPROCESSOR_OLLAMA_MODEL: gpt-oss
+      OLLAMA_HOST: http://host.docker.internal:11434
+      PNGX_POSTPROCESSOR_POSTPROCESSING_TAG: auto
+      PNGX_POSTPROCESSOR_POSTPROCESSING_INPUT_TAG: Refresh
+      PNGX_POSTPROCESSOR_AUTH_TOKEN: 4c2aa2139217ca1f927cd6d54302694ddab732e0
+      PNGX_POSTPROCESSOR_DEBUG: False
+      
+      PAPERLESS_REDIS: redis://redis:6379
+      PAPERLESS_DBHOST: db
+      PAPERLESS_DBUSER: paperless
+      PAPERLESS_DBPASS: paperless
+      PAPERLESS_TIKA_ENABLED: 1
+      PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3000
+      PAPERLESS_TIKA_ENDPOINT: http://tika:9998
+      PAPERLESS_ADMIN_PASSWORD: Anna1985
+      #PAPERLESS_TRASH_DIR: /usr/src/paperless/media/trash
+      PAPERLESS_FILENAME_FORMAT_REMOVE_NONE: True
+      PAPERLESS_OCR_LANGUAGE: deu+eng
+      PAPERLESS_CONSUMER_RECURSIVE: True
+      PAPERLESS_CONSUMER_BARCODE_TIFF_SUPPORT: True
+      PAPERLESS_CONSUMER_POLLING: 30
+      PAPERLESS_TIME_ZONE: Europe/Berlin
+      PAPERLESS_AUTO_LOGIN_USERNAME: admin
+      PAPERLESS_FILENAME_FORMAT: "{{created}}-{{correspondent}}-{{title}}"
+      PAPERLESS_NUMBER_OF_SUGGESTED_DATES: 5
+      PAPERLESS_CONSUMER_BARCODE_STRING: PATCHT
+      PAPERLESS_ADMIN_USER: admin
+      PAPERLESS_DBENGINE: postgresql
+      PAPERLESS_ENABLE_HTTP_REMOTE_USER: True
+      PAPERLESS_CONSUMER_ENABLE_BARCODES: True
+
+
+  init-runner:
+    image: docker:27-cli
+    restart: "no"
+    depends_on:
+      - paperless-ngx
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./:/usr/src/paperless-ngx-postprocessor
+    command: >
+      sh -c "echo 'waiting for paperless to start...'; sleep 10;
+      docker exec paperless-ngx-postprocessor-paperless-ngx-1 bash -lc '/usr/src/paperless-ngx-postprocessor/postdockerstart.sh' || true"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      
+  gotenberg:
+    image: docker.io/gotenberg/gotenberg:8.20
+    restart: always 
+    # The gotenberg chromium route is used to convert .eml files. We do not
+    # want to allow external content like tracking pixels or even javascript.
+    command:
+      - "gotenberg"
+      - "--chromium-disable-javascript=true"
+      - "--chromium-allow-list=file:///tmp/.*"
+  tika:
+    image: docker.io/apache/tika:latest
+    restart: always
+volumes:
+  data:
+  media:
+  pgdata:
+  redisdata:
