@@ -6,15 +6,30 @@ import subprocess
 import sys
 from pathlib import Path
 
+# Debugpy import and setup for remote debugging
+if os.environ.get('PNGX_POSTPROCESSOR_DEBUG', '').lower() == 'true':
+    try:
+        import debugpy
+        import signal
+        import threading
+        
+        debugpy.listen(("0.0.0.0", 5678))
+        print("⏳ Waiting for debugger to attach...")
+        debugpy.wait_for_client()
+        print("🔗 Debugger attached!")
+    except ModuleNotFoundError:
+        print("debugpy not installed; continuing without debugger")
+
 from paperlessngx_postprocessor import Config, PaperlessAPI, Postprocessor
 
 if __name__ == "__main__":
     directory = os.path.abspath(os.path.dirname(__file__))
 
-    document_id = os.environ.get("DOCUMENT_ID")
+    document_id = os.environ.get("DOCUMENT_ID", "1")
 
     if document_id is not None:
-        subprocess.run((str(Path(directory)/"paperlessngx_postprocessor.py"),
+        subprocess.run((sys.executable,
+                        str(Path(directory)/"paperlessngx_postprocessor.py"),
                         "process",
                         "--document-id",
                         document_id))

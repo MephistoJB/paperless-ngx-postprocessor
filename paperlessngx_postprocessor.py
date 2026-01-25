@@ -7,17 +7,6 @@ import yaml
 import os
 import copy
 
-# Debugpy import and setup for remote debugging
-if os.environ.get('PNGX_POSTPROCESSOR_DEBUG', '').lower() == 'true':
-    try:
-        import debugpy
-        debugpy.listen(("0.0.0.0", 5678))
-        print("⏳ Waiting for debugger to attach...")
-        debugpy.wait_for_client()
-        print("🔗 Debugger attached!")
-    except ModuleNotFoundError:
-        print("debugpy not installed; continuing without debugger")
-        
 from paperlessngx_postprocessor import Config, PaperlessAPI, Postprocessor
 from paperlessngx_postprocessor.ai import AI
 
@@ -27,8 +16,8 @@ if __name__ == "__main__":
     config = Config(Config.general_options())
     
     arg_parser = argparse.ArgumentParser(description="Apply postprocessing to documents in Paperless-ngx",
-                                         #formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-                                         epilog="See https://github.com/jgillula/paperless-ngx-postprocessor#readme for more information and detailed examples.")
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    epilog="See https://github.com/jgillula/paperless-ngx-postprocessor#readme for more information and detailed examples.")
     for option_name in config.options_spec.keys():
         arg_parser.add_argument("--" + option_name.replace("_","-"), **config.options_spec[option_name].argparse_args)
 

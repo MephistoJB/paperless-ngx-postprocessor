@@ -11,13 +11,12 @@ class AI:
             logging.basicConfig(format="[%(asctime)s] [%(levelname)s] [%(module)s] %(message)s", level="CRITICAL")
             self._logger = logging.getLogger()
         self._model = model
-        self.systemprompt = 'You are a personalized document analyzer. Your task is to analyze documents and extract relevant information. \
-            \
-            Analyze the document content which you will get in the next message.\
-            After that I will send you the instruction which information you need to extract.\
-            Be Short and concise and answer without any other additional information and without control characters. \
-            Correct spelling or other errors in your answer. Return the info in JSON format. \
-            This is an example of the JSON format: {"info": "your answer"} '
+        self.systemprompt = 'You are a personalized document analyzer. Your task is to analyze documents and extract relevant information. \n\n \
+            Analyze the document content which you will get in the next message.\n\n \
+            After that I will send you the instruction which information you need to extract.\n\n \
+            Be Short and concise and answer without any other additional information and without control characters. \n\n \
+            Correct spelling or other errors in your answer. Answer in one statement without any other additional information \
+            and without control characters or any other formatting.'
     def getResponse(self, content, prompt):
         messages = [
         {
@@ -35,8 +34,9 @@ class AI:
         ]
 
         response = chat(self._model, messages=messages)
-        jsonvalue = json.loads(response['message']['content'])
-        return (jsonvalue['info'])
+        responsevalue = response['message']['content']
+        self._logger.info("responsevalue: " + responsevalue)
+        return responsevalue
     
     def selfCheck(self):
         start = datetime.now()

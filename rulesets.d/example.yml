@@ -27,12 +27,12 @@
 #  validation_rule: "{{ num_documents(correspondent=correspondent, document_type=document_type, created_date_object=created_date_object) == 1 }}"
 #  # Matches always
 #  # Extracts a titel of the document using AI (For now only Ollama)
-AI Ruleset:
-  match: True
-  prompts:
-    ai_title: "{{Extract the title from the document}}"
-  metadata_postprocessing:
-    title: "<<ai_title>>"
+#AI Ruleset:
+#  match: True
+#  prompts:
+#    ai_title: "{{Extract the title from the document}}"
+#  metadata_postprocessing:
+#    title: "<<ai_title>>"
 #---
 # Addition for custom_fields
 # this is just an example from the contributor hasechris - he wants to fill a custom_field based on a handwritten note on the scanned document.
