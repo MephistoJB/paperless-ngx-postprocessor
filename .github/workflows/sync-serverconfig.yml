@@ -34,15 +34,19 @@ jobs:
           cd /tmp/serverconfig
           git checkout main || git checkout master
 
-      - name: Copy all files to target repository
+      - name: Delete existing target directory and copy files
         run: |
-          # Create target directory if it doesn't exist
-          mkdir -p /tmp/serverconfig/paperless-ngx
+          # Delete the target directory completely if it exists
+          rm -rf /tmp/serverconfig/paperless-ngx/paperless-ngx-postprocessor
+
+          # Create target directory
+          mkdir -p /tmp/serverconfig/paperless-ngx/paperless-ngx-postprocessor
 
           # Copy all files from current repository to target
-          # Exclude .git and .github directories
+          # Exclude .git, .github, and .vscode directories
           rsync -av --exclude='.git' \
                     --exclude='.github' \
+                    --exclude='.vscode' \
                     --exclude='.DS_Store' \
                     --exclude='__pycache__' \
                     --exclude='*.pyc' \
@@ -50,11 +54,11 @@ jobs:
                     --exclude='.venv' \
                     --exclude='env' \
                     --exclude='.env' \
-                    ${{ github.workspace }}/ /tmp/serverconfig/paperless-ngx/
+                    ${{ github.workspace }}/ /tmp/serverconfig/paperless-ngx/paperless-ngx-postprocessor/
 
           # List copied files for debugging
           echo "Copied files:"
-          find /tmp/serverconfig/paperless-ngx -type f | head -20
+          find /tmp/serverconfig/paperless-ngx/paperless-ngx-postprocessor -type f | head -20
 
       - name: Check for changes in target repository
         id: check-changes
@@ -75,7 +79,7 @@ jobs:
           SYNC_TOKEN: ${{ secrets.SYNC_TOKEN }}
         run: |
           cd /tmp/serverconfig
-          git add paperless-ngx/
+          git add paperless-ngx/paperless-ngx-postprocessor/
           git commit -m "Sync files from ${{ github.repository }}@${{ github.sha }} [skip ci]"
           git push https://${SYNC_TOKEN}@github.com/MephistoJB/serverconfig.git main || \
           git push https://${SYNC_TOKEN}@github.com/MephistoJB/serverconfig.git master
