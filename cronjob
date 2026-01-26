@@ -1,1 +1,1 @@
-* * * * * /usr/src/paperless/scripts/cronjobscript.sh > /usr/src/paperless/logs/log.txt 2>&1
+* * * * * /usr/src/paperless/paperless-ngx-postprocessor/cronjobscript.sh > /usr/src/paperless/logs/log.txt 2>&1
