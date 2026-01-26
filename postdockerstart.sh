@@ -9,7 +9,13 @@ apt install cron nano procps -y
 printenv >> /etc/environment
 crontab -u root "$DIR/cronjob"
 #cron -f
-cron
+# Check if cron is already running before starting it
+if ! pgrep -x cron > /dev/null; then
+    echo "Starting cron daemon..."
+    cron
+else
+    echo "Cron daemon is already running (PID: $(pgrep -x cron))"
+fi
 
 
 # RUN_DIR="$DIR"
