@@ -2,7 +2,7 @@
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 apt update
 apt install cron nano procps -y
-/usr/src/paperless-ngx-postprocessor/setup_venv.sh
+"$DIR/setup_venv.sh"
 
 #####################OLD???######################
 
