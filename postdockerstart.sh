@@ -6,10 +6,10 @@ apt install cron nano procps -y
 
 #####################OLD???######################
 
-# printenv >> /etc/environment
-# crontab -u root "$DIR/cronjob"
-# #cron -f
-# cron
+printenv >> /etc/environment
+crontab -u root "$DIR/cronjob"
+#cron -f
+cron
 
 
 # RUN_DIR="$DIR"
