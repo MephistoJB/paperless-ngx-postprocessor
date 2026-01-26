@@ -4,7 +4,6 @@ apt update
 apt install cron nano procps -y
 "$DIR/setup_venv.sh"
 
-#####################OLD???######################
 
 printenv >> /etc/environment
 crontab -u root "$DIR/cronjob"
@@ -17,6 +16,8 @@ else
     echo "Cron daemon is already running (PID: $(pgrep -x cron))"
 fi
 
+
+#####################OLD???######################
 
 # RUN_DIR="$DIR"
 # SERVICE_SCRIPT="$RUN_DIR/local_runner_service.py"
