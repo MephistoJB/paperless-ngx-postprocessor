@@ -1,0 +1,40 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Start Debug Container Script",
+            "type": "shell",
+            "command": "CONTAINER=$(docker ps --format '{{.Names}}' | grep paperless-ngx | head -1) && docker exec -e PNGX_POSTPROCESSOR_DEBUG=true -e DOCUMENT_ID=${input:documentId} $CONTAINER bash -c 'cd /usr/src/paperless-ngx-postprocessor && source venv/bin/activate && python3 post_consume_script.py'",
+            "isBackground": true,
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "label": "Stop Container Script",
+            "type": "shell",
+            "command": "CONTAINER=$(docker ps --format '{{.Names}}' | grep paperless-ngx | head -1) && docker exec $CONTAINER pkill -f 'post_consume_script.py' || true",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "silent",
+                "panel": "dedicated"
+            }
+        },
+        {
+            "label": "Get Container Name",
+            "type": "shell",
+            "command": "docker ps --format '{{.Names}}' | grep paperless-ngx | head -1",
+            "problemMatcher": []
+        }
+    ],
+    "inputs": [
+        {
+            "id": "documentId",
+            "description": "Document ID to process",
+            "default": "1",
+            "type": "promptString"
+        }
+    ]
+}

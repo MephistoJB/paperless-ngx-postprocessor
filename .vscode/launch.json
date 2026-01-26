@@ -1,0 +1,30 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python-Debugger: Aktuelle Datei",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Debug post_consume_script.py (Docker)",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}",
+                    "remoteRoot": "/usr/src/paperless-ngx-postprocessor"
+                }
+            ],
+            "preLaunchTask": "Start Debug Container Script",
+            "postDebugTask": "Stop Container Script",
+            "justMyCode": false
+        }
+    ]
+}
