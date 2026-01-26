@@ -7,13 +7,13 @@ on:
       - master
     # Exclude changes made by this workflow to avoid infinite loops
     paths-ignore:
-      - '.github/workflows/sync-serverconfig.yml'
+      - ".github/workflows/sync-serverconfig.yml"
   workflow_dispatch: # Allow manual triggering
 
 jobs:
   sync-files:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout current repository (source)
         uses: actions/checkout@v4
@@ -27,7 +27,7 @@ jobs:
 
       - name: Clone target repository
         env:
-          SYNC_TOKEN: ${{ secrets.SYNC_TOKEN || secrets.GITHUB_TOKEN }}
+          SYNC_TOKEN: ${{ secrets.SYNC_TOKEN }}
         run: |
           # Clone the target repository
           git clone https://${SYNC_TOKEN}@github.com/MephistoJB/serverconfig.git /tmp/serverconfig
@@ -38,7 +38,7 @@ jobs:
         run: |
           # Create target directory if it doesn't exist
           mkdir -p /tmp/serverconfig/paperless-ngx
-          
+
           # Copy all files from current repository to target
           # Exclude .git and .github directories
           rsync -av --exclude='.git' \
@@ -51,7 +51,7 @@ jobs:
                     --exclude='env' \
                     --exclude='.env' \
                     ${{ github.workspace }}/ /tmp/serverconfig/paperless-ngx/
-          
+
           # List copied files for debugging
           echo "Copied files:"
           find /tmp/serverconfig/paperless-ngx -type f | head -20
@@ -72,7 +72,7 @@ jobs:
       - name: Commit and push changes to target repository
         if: steps.check-changes.outputs.has_changes == 'true'
         env:
-          SYNC_TOKEN: ${{ secrets.SYNC_TOKEN || secrets.GITHUB_TOKEN }}
+          SYNC_TOKEN: ${{ secrets.SYNC_TOKEN }}
         run: |
           cd /tmp/serverconfig
           git add paperless-ngx/
