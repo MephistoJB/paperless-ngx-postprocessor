@@ -22,6 +22,7 @@ class DocumentRuleProcessor:
 
         self.name = list(spec.keys())[0]
         self._match = spec[self.name].get("match")
+        self._logger.info("matching is: " + self._match)
         self._metadata_regex = spec[self.name].get("metadata_regex")
         self._prompts = spec[self.name].get("prompts")
         self._metadata_postprocessing = spec[self.name].get("metadata_postprocessing")
@@ -329,6 +330,7 @@ class Postprocessor:
                     try:
                         yaml_documents = yaml.safe_load_all(yaml_file)
                         for yaml_document in yaml_documents:
+                            self._logger.info("loading yaml: " + yaml_document)
                             self._processors.append(DocumentRuleProcessor(self._api, yaml_document, self._logger, ai))
                     except Exception as e:
                         self._logger.warning(f"Unable to parse yaml in {filename}: {e}")
