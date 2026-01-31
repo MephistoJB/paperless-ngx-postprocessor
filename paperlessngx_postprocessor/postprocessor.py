@@ -324,6 +324,8 @@ class Postprocessor:
 
         self._processors = []
     
+        self._logger.info("Rules dir: " + self._rules_dir)
+
         for filename in sorted(list(self._rules_dir.glob("*.yml"))):
             if filename.is_file():
                 with open(filename, "r") as yaml_file:
