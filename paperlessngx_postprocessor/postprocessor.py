@@ -323,20 +323,36 @@ class Postprocessor:
         self._skip_validation = skip_validation
 
         self._processors = []
+        self._logger.info("Step 1: Initialized processors list")
     
-        self._logger.info("Rules dir: " + rules_dir)
-
-        for filename in sorted(list(self._rules_dir.glob("*.yml"))):
+        self._logger.info("Step 2: Rules dir: %s", self._rules_dir.resolve())
+        
+        self._logger.info("Step 3: Starting to glob for *.yml files")
+        yml_files = list(self._rules_dir.glob("*.yml"))
+        self._logger.info("Step 4: Found %d yml files", len(yml_files))
+        
+        for filename in sorted(yml_files):
+            self._logger.info("Step 5: Processing file: %s", filename)
             if filename.is_file():
+                self._logger.info("Step 6: Confirmed %s is a file", filename)
                 with open(filename, "r") as yaml_file:
+                    self._logger.info("Step 7: Opened file %s", filename)
                     try:
+                        self._logger.info("Step 8: Loading YAML documents from %s", filename)
                         yaml_documents = yaml.safe_load_all(yaml_file)
-                        for yaml_document in yaml_documents:
-                            self._logger.info("loading yaml: " + yaml_document)
+                        self._logger.info("Step 9: YAML documents loaded, iterating...")
+                        for idx, yaml_document in enumerate(yaml_documents):
+                            self._logger.info("Step 10: Processing YAML document %d from %s", idx + 1, filename)
+                            self._logger.info("Step 11: YAML document content: %s", str(yaml_document)[:200])
+                            self._logger.info("Step 12: Creating DocumentRuleProcessor")
                             self._processors.append(DocumentRuleProcessor(self._api, yaml_document, self._logger, ai))
+                            self._logger.info("Step 13: DocumentRuleProcessor created and added")
                     except Exception as e:
-                        self._logger.warning(f"Unable to parse yaml in {filename}: {e}")
-        self._logger.debug(f"Loaded {len(self._processors)} rules")
+                        self._logger.warning("Step ERROR: Unable to parse yaml in %s: %s", filename, e)
+            else:
+                self._logger.info("Step SKIP: %s is not a file", filename)
+        
+        self._logger.info("Step 14: Loaded %d rules total", len(self._processors))
 
         
     def _get_new_metadata_in_filename_format(self, metadata_in_filename_format, content):
